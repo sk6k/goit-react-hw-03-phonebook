@@ -15,6 +15,18 @@ class App extends Component {
     filter: '',
   };
 
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  }
+
+  componentDidUpdate() {
+    localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+  }
+
   handleAddContact = event => {
     event.preventDefault();
     const actualContacts = {
@@ -26,9 +38,9 @@ class App extends Component {
       number: event.target[1].value,
     };
     const names = actualContacts.contacts.map(contact =>
-      contact.name.toLocaleLowerCase()
+      contact.name.toLowerCase()
     );
-    if (names.includes(addedContact.name.toLocaleLowerCase())) {
+    if (names.includes(addedContact.name.toLowerCase())) {
       return alert(`${addedContact.name} is already in contacts.`);
     }
     actualContacts.contacts.push(addedContact);
@@ -56,11 +68,6 @@ class App extends Component {
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
   };
-
-  // clear = (name, number) => {
-  //   name = '';
-  //   number = '';
-  // };
 
   render() {
     const { filter } = this.state;
