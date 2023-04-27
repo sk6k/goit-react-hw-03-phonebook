@@ -23,30 +23,25 @@ class App extends Component {
     }
   }
 
-  componentDidUpdate() {
-    localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts)
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
   }
 
   handleAddContact = event => {
     event.preventDefault();
-    const actualContacts = {
-      ...this.state,
-    };
+    const actualContacts = [...this.state.contacts];
     const addedContact = {
-      name: event.target[0].value,
       id: nanoid(),
+      name: event.target[0].value,
       number: event.target[1].value,
     };
-    const names = actualContacts.contacts.map(contact =>
-      contact.name.toLowerCase()
-    );
+    const names = actualContacts.map(contact => contact.name.toLowerCase());
     if (names.includes(addedContact.name.toLowerCase())) {
       return alert(`${addedContact.name} is already in contacts.`);
     }
-    actualContacts.contacts.push(addedContact);
-    this.setState({
-      ...actualContacts,
-    });
+    actualContacts.push(addedContact);
+    this.setState(() => ({ contacts: actualContacts }));
     event.target[0].value = '';
     event.target[1].value = '';
   };
